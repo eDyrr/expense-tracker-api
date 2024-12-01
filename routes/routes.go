@@ -7,4 +7,7 @@ import (
 
 func SetUpRoutes(router *mux.Router) {
 	router.HandleFunc("/", controllers.Hello)
+	router.HandleFunc("/api/register", controllers.Register)
+	router.HandleFunc("/api/login", controllers.Login)
+	router.HandleFunc("/api/user", controllers.User)
 }
