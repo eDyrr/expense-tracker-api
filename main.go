@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 
@@ -13,23 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// var tmpl *template.Template
-
 func main() {
-	// tmpl, _ = template.ParseGlob("./templates/*.html")
-
-	// router := mux.NewRouter()
-
-	// router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	tmpl.ExecuteTemplate(w, "index.html", nil)
-	// })
-
-	// router.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
-
-	// })
-
-	// http.ListenAndServe(":3000", router)
-
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("error loading .env file: %s", err)
@@ -43,7 +28,6 @@ func main() {
 	fmt.Println("Connection is successful")
 
 	router := mux.NewRouter()
-
 	cors := handlers.CORS(
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "Autherization", "Accept", "Origin",
@@ -57,8 +41,10 @@ func main() {
 			"Access-Control-Allow-Credentials"}),
 		handlers.AllowCredentials(),
 	)
+	var tmpl *template.Template
 
-	routes.SetUpRoutes(router)
+	tmpl, _ = template.ParseGlob("./templates/*.html")
+	routes.SetUpRoutes(router, tmpl)
 
 	http.ListenAndServe(":3000", cors(router))
 }
