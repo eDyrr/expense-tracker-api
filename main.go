@@ -3,24 +3,25 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/eDyrr/expense-tracker-api/database"
 	"github.com/eDyrr/expense-tracker-api/routes"
-	"github.com/joho/godotenv"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("error loading .env file: %s", err)
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Fatalf("error loading .env file: %s", err)
+	// }
+	// log.Println("KEY:", os.Getenv("KEY"))
+	// log.Println("DB_CRED:", os.Getenv("DB_CRED"))
+	// log.Println("API_SECRET:", os.Getenv("API_SECRET"))
 
-	_, err = database.ConnectDB()
+	_, err := database.ConnectDB()
 	if err != nil {
 		panic("could not connect to db")
 	}

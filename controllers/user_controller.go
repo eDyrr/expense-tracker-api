@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
 
 	"github.com/eDyrr/expense-tracker-api/database"
+	"github.com/eDyrr/expense-tracker-api/middleware"
 	"github.com/eDyrr/expense-tracker-api/models"
-	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -54,6 +53,8 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+
+	session, _ := middleware.Store.Get(r, "authentification")
 	var body struct {
 		Email    string
 		Password string
@@ -81,31 +82,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 1).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte("someShit"))
-
-	if err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	cookie := &http.Cookie{
-		Name:     "Authorization",
-		Value:    tokenString,
-		Path:     "/",
-		HttpOnly: true,
-		MaxAge:   3600,
-		Secure:   true,
-	}
-	http.SetCookie(w, cookie)
+	session.Values["authenticated"] = true
+	session.Save(r, w)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
+	json.NewEncoder(w).Encode(&user)
 
 }
 
@@ -124,9 +106,15 @@ func Listall(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&users)
 }
 
-func Home(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
+func Logout(w http.ResponseWriter, r *http.Request) {
+	session, _ := middleware.Store.Get(r, "authentification")
 
-	err := tmpl.ExecuteTemplate(w, "index.html", nil)
+	session.Values["authenticated"] = false
+	session.Save(r, w)
+}
+
+func Home(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
+	err := tmpl.ExecuteTemplate(w, "home", nil)
 	if err != nil {
 		fmt.Println("not rendering the html")
 		http.Error(w, "", http.StatusInternalServerError)
