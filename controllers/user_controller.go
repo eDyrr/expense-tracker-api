@@ -83,6 +83,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.Values["authenticated"] = true
+	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -126,4 +127,38 @@ func WithTemplate(tmpl *template.Template, handler func(http.ResponseWriter, *ht
 	return func(w http.ResponseWriter, r *http.Request) {
 		handler(w, r, tmpl)
 	}
+}
+
+func AddPurchase(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Name     string
+		Category string
+		Price    float32
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		http.Error(w, "failed to decode request", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Print("user %v", body)
+
+	session, _ := middleware.Store.Get(r, "authentification")
+
+	purchase := models.Purchase{
+		Name:     body.Name,
+		Category: body.Category,
+		Cost:     body.Price,
+		UserID:   session.Values["user_id"].(uint),
+	}
+
+	result := database.DB.Create(&purchase)
+	if result.Error != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(purchase)
 }

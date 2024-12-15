@@ -34,4 +34,5 @@ func SetUpRoutes(router *mux.Router, tmpl *template.Template) {
 	homeMiddleware.HandleFunc("/logout", controllers.Logout)
 	homeMiddleware.HandleFunc("/home", controllers.WithTemplate(tmpl, controllers.Home))
 	homeMiddleware.HandleFunc("/list", controllers.Listall)
+	homeMiddleware.HandleFunc("/purchase", controllers.AddPurchase)
 }

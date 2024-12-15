@@ -1,43 +1,138 @@
 {{define "home"}}
+<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 <style>
-    .vertical {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-    .horizontal {
-        display: flex;
-        gap: 10px;
-        /* align-items: center; */
-    }
-    p {
-        margin: 0;
-    }
+   /* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5; /* Softer background for a modern look */
+    color: #333;
+}
+
+/* Buttons */
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.sign-out {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #dc3545;
+}
+
+.sign-out:hover {
+    background-color: #a71d2a;
+}
+
+/* Inputs and Selects */
+input, select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease; /* Adds hover focus feedback */
+}
+
+input:focus, select:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Containers */
+.horizontal {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: flex-start; /* Keeps alignment neat for vertical columns */
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 280px; /* Consistent width for vertical sections */
+    box-sizing: border-box;
+}
+
+/* Text Styling */
+.vertical p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.vertical p strong {
+    font-size: 16px;
+    color: #000;
+}
+
+/* Headings */
+.vertical h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #007BFF;
+    border-bottom: 2px solid #007BFF;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Forms */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 </style>
 <body>
-    <button>
-        sign out
-    </button>
+    <button class="sign-out">Sign Out</button>
     <div class="horizontal">
         <div class="vertical">
-            <input type="text" placeholder="name">
-            <input type="text" placeholder="categorie">
-            <input type="text" placeholder="cost">
-            <button>
-                submit
-            </button>
+            <h3>Submit Expense</h3>
+            <form>
+                <input type="text" placeholder="Name">
+                <label>
+                    <select name="category">
+                        <option value="groceries">groceries</option>
+                        <option value="leisure">leisure</option>
+                        <option value="electronics">electronics</option>
+                        <option value="utilities">utilities</option>
+                        <option value="clothing">clothing</option>
+                        <option value="health">health</option>
+                        <option value="others">others</option>
+                    </select>
+                </label>
+                <input type="text" placeholder="Cost">
+                <button hx-post="/site/purchase">Submit</button>
+            </form>
         </div>
         <div class="vertical">
-            <p>
-                username
-            </p>
-            <p>
-                email
-            </p>
-            <p>
-                total expenses
-            </p>
+            <h3>User Information</h3>
+            <p><strong>Username:</strong> John Doe</p>
+            <p><strong>Email:</strong> john.doe@example.com</p>
+            <p><strong>Total Expenses:</strong> $1234.56</p>
         </div>
     </div>
 </body>
