@@ -1,18 +1,44 @@
 {{define "home"}}
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body> -->
-    <h1>Welcome to Home</h1>
-    <!-- <p>{{.Message}}</p> -->
-    
-    <footer>
-        <p>&copy; 2024 Your Website Name</p>
-    </footer>
-<!-- </body>
-</html> -->
+<style>
+    .vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .horizontal {
+        display: flex;
+        gap: 10px;
+        /* align-items: center; */
+    }
+    p {
+        margin: 0;
+    }
+</style>
+<body>
+    <button>
+        sign out
+    </button>
+    <div class="horizontal">
+        <div class="vertical">
+            <input type="text" placeholder="name">
+            <input type="text" placeholder="categorie">
+            <input type="text" placeholder="cost">
+            <button>
+                submit
+            </button>
+        </div>
+        <div class="vertical">
+            <p>
+                username
+            </p>
+            <p>
+                email
+            </p>
+            <p>
+                total expenses
+            </p>
+        </div>
+    </div>
+</body>
 {{end}}
