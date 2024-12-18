@@ -1,86 +1,138 @@
 {{ define "signup" }}
 <style>
-    /* General Styling */
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f4f8; /* Light background for a clean look */
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  background: #f3f4f6;
+  color: #333;
+}
 
-    /* Center the form */
-    form {
-        background: white;
-        padding: 20px 30px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        width: 300px;
-        box-sizing: border-box;
-    }
+/* Left section styling */
+.left-section {
+  flex: 1;
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+.left-section h1 {
+  font-size: 2.5rem;
+  line-height: 1.4;
+}
+.left-section p {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  line-height: 1.6;
+}
 
-    /* Inputs Styling */
-    input {
-        padding: 10px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
-        transition: border-color 0.3s ease;
-    }
+/* Right section styling */
+.right-section {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+}
+.right-section h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.right-section p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #555;
+}
 
-    input:focus {
-        border-color: #007BFF;
-        outline: none;
-    }
+/* Form styling */
+form {
+  width: 100%;
+  max-width: 360px;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
 
-    input::placeholder {
-        color: #aaa;
-    }
-
-    /* Button Styling */
-    button {
-        padding: 10px 15px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    button:active {
-        background-color: #003f7f;
-    }
-
-    /* Form Title */
-    .form-title {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 10px;
-        text-align: center;
-        color: #333;
-    }
+/* Button styling */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-signup {
+  background: linear-gradient(90deg, #4CAF50, #388E3C);
+  color: #fff;
+}
+.btn-signup:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+.btn:focus {
+  outline: none;
+}
 </style>
 
-<div>
-    <form>
-        <div class="form-title">Sign Up</div>
-        <input placeholder="Name" type="text" required>
-        <input placeholder="Email" type="email" required>
-        <input placeholder="Password" type="password" required>
-        <button type="submit" hx-post="/signup">Submit</button>
-    </form>
+<div class="left-section">
+  <div>
+    <h1>Join Us Today!</h1>
+    <p>Sign up to manage your expenses and take control of your finances.</p>
+  </div>
 </div>
-{{end}}
+<div class="right-section">
+  <h1>Sign Up</h1>
+  <p>Fill in your details below to create your account.</p>
+  <form>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+    </div>
+    <button type="submit" class="btn btn-signup" hx-post="/api/signup">Sign Up</button>
+  </form>
+</div>
+{{ end }}

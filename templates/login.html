@@ -1,155 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Expense Tracker</title>
-  <style>
-    /* Reset and basic styling */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      height: 100vh;
-      margin: 0;
-      background: #f3f4f6;
-      color: #333;
-    }
+{{ define "login" }}
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  background: #f3f4f6;
+  color: #333;
+}
 
-    /* Left section styling */
-    .left-section {
-      flex: 1;
-      background: linear-gradient(135deg, #2196F3, #1976D2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-align: center;
-      padding: 2rem;
-    }
-    .left-section h1 {
-      font-size: 2.5rem;
-      line-height: 1.4;
-    }
-    .left-section p {
-      font-size: 1.2rem;
-      margin-top: 1rem;
-      line-height: 1.6;
-    }
+/* Left section styling */
+.left-section {
+  flex: 1;
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+.left-section h1 {
+  font-size: 2.5rem;
+  line-height: 1.4;
+}
+.left-section p {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  line-height: 1.6;
+}
 
-    /* Right section styling */
-    .right-section {
-      flex: 1;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-      box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .right-section h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-    .right-section p {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: #555;
-    }
+/* Right section styling */
+.right-section {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+}
+.right-section h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.right-section p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #555;
+}
 
-    /* Form styling */
-    form {
-      width: 100%;
-      max-width: 360px;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: #333;
-    }
-    input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    input:focus {
-      outline: none;
-      border-color: #2196F3;
-      box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
-    }
+/* Form styling */
+form {
+  width: 100%;
+  max-width: 360px;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+input:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
 
-    /* Button styling */
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 0.75rem 1rem;
-      margin-top: 1rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .btn-login {
-      background: linear-gradient(90deg, #2196F3, #1976D2);
-      color: #fff;
-    }
-    .btn-login:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    }
-    .btn:focus {
-      outline: none;
-    }
-    .forgot-password {
-      display: block;
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #555;
-      text-decoration: none;
-    }
-    .forgot-password:hover {
-      color: #2196F3;
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="left-section">
-    <div>
-      <h1>Welcome Back!</h1>
-      <p>Log in to access your expense tracker and stay on top of your finances.</p>
-    </div>
+/* Button styling */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-login {
+  background: linear-gradient(90deg, #2196F3, #1976D2);
+  color: #fff;
+}
+.btn-login:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+.btn:focus {
+  outline: none;
+}
+.forgot-password {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #555;
+  text-decoration: none;
+}
+.forgot-password:hover {
+  color: #2196F3;
+  text-decoration: underline;
+}
+</style>
+<div class="left-section">
+<div>
+  <h1>Welcome Back!</h1>
+  <p>Log in to access your expense tracker and stay on top of your finances.</p>
+</div>
+</div>
+<div class="right-section">
+<h1>Log In</h1>
+<p>Enter your credentials below to log in to your account.</p>
+<form action="/auth/login" method="POST">
+  <div class="form-group">
+    <label for="email">Email Address</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" required>
   </div>
-  <div class="right-section">
-    <h1>Log In</h1>
-    <p>Enter your credentials below to log in to your account.</p>
-    <form action="/auth/login" method="POST">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-      </div>
-      <button type="submit" class="btn btn-login">Log In</button>
-      <a href="/auth/forgot-password" class="forgot-password">Forgot your password?</a>
-    </form>
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" placeholder="Enter your password" required>
   </div>
-</body>
-</html>
+  <button type="submit" class="btn btn-login">Log In</button>
+  <a href="/auth/forgot-password" class="forgot-password">Forgot your password?</a>
+</form>
+</div>
+{{end}}
