@@ -12,14 +12,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SignUp(w http.ResponseWriter, r *http.Request) {
+func SignUp(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
+	err := tmpl.ExecuteTemplate(w, "signup", nil)
+	if err != nil {
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
+	}
 	var body struct {
 		Name     string
 		Email    string
 		Password string
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&body)
+	err = json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		http.Error(w, "couldnt decode the fucking body req", http.StatusBadRequest)
 		return
@@ -131,9 +135,9 @@ func WithTemplate(tmpl *template.Template, handler func(http.ResponseWriter, *ht
 
 func AddPurchase(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Name     string
-		Category string
-		Price    float32
+		Name     string  `json:"Name"`
+		Category string  `json:"Category"`
+		Price    float32 `json:"Price"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
@@ -144,21 +148,21 @@ func AddPurchase(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Print("user %v", body)
 
-	session, _ := middleware.Store.Get(r, "authentification")
+	// session, _ := middleware.Store.Get(r, "authentification")
 
-	purchase := models.Purchase{
-		Name:     body.Name,
-		Category: body.Category,
-		Cost:     body.Price,
-		UserID:   session.Values["user_id"].(uint),
-	}
+	// purchase := models.Purchase{
+	// 	Name:     body.Name,
+	// 	Category: body.Category,
+	// 	Cost:     body.Price,
+	// 	UserID:   session.Values["user_id"].(uint),
+	// }
 
-	result := database.DB.Create(&purchase)
-	if result.Error != nil {
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
+	// result := database.DB.Create(&purchase)
+	// if result.Error != nil {
+	// 	http.Error(w, "", http.StatusInternalServerError)
+	// 	return
+	// }
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(purchase)
+	// w.WriteHeader(http.StatusCreated)
+	// json.NewEncoder(w).Encode(purchase)
 }

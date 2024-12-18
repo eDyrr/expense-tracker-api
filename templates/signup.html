@@ -1,0 +1,86 @@
+{{ define "signup" }}
+<style>
+    /* General Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f4f8; /* Light background for a clean look */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Center the form */
+    form {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 300px;
+        box-sizing: border-box;
+    }
+
+    /* Inputs Styling */
+    input {
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+        border-color: #007BFF;
+        outline: none;
+    }
+
+    input::placeholder {
+        color: #aaa;
+    }
+
+    /* Button Styling */
+    button {
+        padding: 10px 15px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    button:active {
+        background-color: #003f7f;
+    }
+
+    /* Form Title */
+    .form-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #333;
+    }
+</style>
+
+<div>
+    <form>
+        <div class="form-title">Sign Up</div>
+        <input placeholder="Name" type="text" required>
+        <input placeholder="Email" type="email" required>
+        <input placeholder="Password" type="password" required>
+        <button type="submit" hx-post="/signup">Submit</button>
+    </form>
+</div>
+{{end}}
