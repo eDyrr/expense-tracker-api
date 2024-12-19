@@ -21,6 +21,7 @@ func SetUpRoutes(router *mux.Router, tmpl *template.Template) {
 
 	api := router.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/signup", controllers.SignUp)
+	api.HandleFunc("/login", controllers.Login)
 
 	homeMiddleware := router.PathPrefix("/site").Subrouter()
 	homeMiddleware.Use(middleware.Auth)

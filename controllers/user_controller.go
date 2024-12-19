@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/eDyrr/expense-tracker-api/database"
@@ -12,18 +11,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func SignUp(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	err := tmpl.ExecuteTemplate(w, "signup", nil)
-	if err != nil {
-		http.Error(w, "Failed to render template", http.StatusInternalServerError)
-	}
+func SignUp(w http.ResponseWriter, r *http.Request) {
+	fmt.Print("in the signup endpoint")
+
 	var body struct {
 		Name     string
 		Email    string
 		Password string
 	}
 
-	err = json.NewDecoder(r.Body).Decode(&body)
+	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
 		http.Error(w, "couldnt decode the fucking body req", http.StatusBadRequest)
 		return
@@ -58,6 +55,8 @@ func SignUp(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
 
 func Login(w http.ResponseWriter, r *http.Request) {
 
+	fmt.Print("login endpoint in")
+
 	session, _ := middleware.Store.Get(r, "authentification")
 	var body struct {
 		Email    string
@@ -65,6 +64,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
+	fmt.Print("user : %v", body)
 	if err != nil {
 		http.Error(w, "couldnt decode req body", http.StatusBadRequest)
 		return
@@ -78,8 +78,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("user %v", user)
-
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
@@ -90,10 +88,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&user)
-
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// json.NewEncoder(w).Encode(&user)
+	http.Redirect(w, r, "/site/home", http.StatusSeeOther)
 }
 
 func Listall(w http.ResponseWriter, r *http.Request) {
@@ -116,21 +114,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	session.Values["authenticated"] = false
 	session.Save(r, w)
-}
-
-func Home(w http.ResponseWriter, r *http.Request, tmpl *template.Template) {
-	err := tmpl.ExecuteTemplate(w, "home", nil)
-	if err != nil {
-		fmt.Println("not rendering the html")
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-}
-
-func WithTemplate(tmpl *template.Template, handler func(http.ResponseWriter, *http.Request, *template.Template)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		handler(w, r, tmpl)
-	}
 }
 
 func AddPurchase(w http.ResponseWriter, r *http.Request) {
