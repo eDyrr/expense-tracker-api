@@ -1,0 +1,89 @@
+{{ define "purchases" }}
+<style>
+    .purchases-container {
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        margin: auto;
+        height: 90%;
+    }
+
+    .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .filter-bar select {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .filter-bar button {
+        padding: 8px 15px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .filter-bar button:hover {
+        background-color: #0056b3;
+    }
+
+    .purchases-list {
+        display: flex;
+        flex-direction: column;
+        overflow: scroll;
+        height: 90%;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .purchase-item {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .purchase-item p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .purchase-item p strong {
+        color: #333;
+    }
+</style>
+
+<div class="purchases-container">
+    <div class="filter-bar">
+        <label>
+            <select>
+                <option>Past week</option>
+                <option>Past month</option>
+                <option>Last 3 months</option>
+            </select>
+        </label>
+        <button>Filter</button>
+    </div>
+    <ul class="purchases-list">
+        {{ range .Purchases }}
+            <div class="purchase-item">
+                <p><strong>Name:</strong> {{ .Name }}</p>
+                <p><strong>Category:</strong> {{ .Category }}</p>
+                <p><strong>Price:</strong> {{ .Cost }}</p>
+                <!-- <p><strong>Date:</strong> {{ .Date }}</p> -->
+            </div>
+        {{ end }}
+    </ul>
+</div>
+{{ end }}

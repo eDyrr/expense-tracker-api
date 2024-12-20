@@ -1,143 +1,125 @@
-{{define "home"}}
-<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+{{ define "home" }}
+<script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
 <style>
-   /* General Styling */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5; /* Softer background for a modern look */
-    color: #333;
-}
-
-/* Buttons */
-button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease; /* Smooth hover effect */
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-.sign-out {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #dc3545;
-}
-
-.sign-out:hover {
-    background-color: #a71d2a;
-}
-
-/* Inputs and Selects */
-input, select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 200px;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease; /* Adds hover focus feedback */
-}
-
-input:focus, select:focus {
-    border-color: #007BFF;
-    outline: none;
-}
-
-/* Containers */
-.horizontal {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    align-items: flex-start; /* Keeps alignment neat for vertical columns */
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 280px; /* Consistent width for vertical sections */
-    box-sizing: border-box;
-}
-
-/* Text Styling */
-.vertical p {
-    margin: 0;
-    font-size: 14px;
-    color: #555;
-}
-
-.vertical p strong {
-    font-size: 16px;
-    color: #000;
-}
-
-/* Headings */
-.vertical h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #007BFF;
-    border-bottom: 2px solid #007BFF;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-}
-
-/* Forms */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
+    body {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        box-sizing: border-box;
+    }
+    .left-half, .right-half {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 20px;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+    .left-half {
+        border-right: 1px solid #ccc;
+    }
+    h3 {
+        margin-bottom: 15px;
+    }
+    .purchases {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .purchase-item {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .right-half button {
+        align-self: flex-end;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    form input, form select, form button {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    form button {
+        align-self: flex-start;
+        cursor: pointer;
+    }
+    .right-half > div {
+        margin-bottom: 20px;
+    }
 </style>
 <body>
-    <button class="sign-out">Sign Out</button>
-    <div class="horizontal">
-        <div class="vertical">
-            <h3>Submit Expense</h3>
-            <form hx-post="/site/purchase" 
-                hx-trigger="submit" 
-                hx-target="this" 
-                hx-headers='{"Content-Type": "application/json"}'
-                hx-encoding="json">
-            <input type="text" name="Name" placeholder="Name" required>
+    <!-- Purchases List -->
+    <div class="left-half">
+        <h3>Purchases</h3>
+        <div class="filter-bar">
             <label>
-                <select name="Category" required>
-                    <option value="groceries">groceries</option>
-                    <option value="leisure">leisure</option>
-                    <option value="electronics">electronics</option>
-                    <option value="utilities">utilities</option>
-                    <option value="clothing">clothing</option>
-                    <option value="health">health</option>
-                    <option value="others">others</option>
+                <select>
+                    <option>Past week</option>
+                    <option>Past month</option>
+                    <option>Last 3 months</option>
                 </select>
             </label>
-            <input type="number" step="0.01" name="Price" placeholder="Cost" required>
-            <button type="submit">Submit</button>
-        </form>
+            <button>Filter</button>
         </div>
-        <div class="vertical">
+        <div class="purchases">
+            {{ range .Purchases }}
+            <div class="purchase-item">
+                <p><strong>Name:</strong> {{ .Name }}</p>
+                <p><strong>Category:</strong> {{ .Category }}</p>
+                <p><strong>Cost:</strong> {{ .Cost }}</p>
+            </div>
+            {{ else }}
+            <p>No purchases yet!</p>
+            {{ end }}
+        </div>
+    </div>
+
+    <!-- Form and Profile Section -->
+    <div class="right-half">
+        <!-- Logout Button -->
+        <button onclick="window.location.href='/logout'">Logout</button>
+
+        <!-- Form for Adding Purchases -->
+        <div>
+            <h3>Submit Expense</h3>
+            <form hx-ext="json-enc" hx-post="/site/purchase" hx-swap="none">
+                <input type="text" name="name" placeholder="Name" required>
+                <select name="category" required>
+                    <option value="groceries">Groceries</option>
+                    <option value="leisure">Leisure</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="health">Health</option>
+                    <option value="others">Others</option>
+                </select>
+                <input type="number" step="0.01" name="cost" placeholder="Cost" required>
+                <button type="submit">Submit</button>
+            </form>
+            
+
+        <!-- Profile Card -->
+        <div>
             <h3>User Information</h3>
-            <p><strong>Username:</strong> John Doe</p>
-            <p><strong>Email:</strong> john.doe@example.com</p>
-            <p><strong>Total Expenses:</strong> $1234.56</p>
+            <p><strong>Username:</strong> {{ .Name }}</p>
+            <p><strong>Email:</strong> {{ .Email }}</p>
         </div>
     </div>
 </body>
-{{end}}
+{{ end }}

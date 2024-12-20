@@ -64,7 +64,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
-	fmt.Print("user : %v", body)
 	if err != nil {
 		http.Error(w, "couldnt decode req body", http.StatusBadRequest)
 		return
@@ -88,10 +87,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = user.ID
 	session.Save(r, w)
 
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// json.NewEncoder(w).Encode(&user)
-	http.Redirect(w, r, "/site/home", http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", "/site/home")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(&user)
 }
 
 func Listall(w http.ResponseWriter, r *http.Request) {
@@ -117,19 +115,22 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddPurchase(w http.ResponseWriter, r *http.Request) {
+	fmt.Print("in the add purchase route")
 	var body struct {
-		Name     string  `json:"Name"`
-		Category string  `json:"Category"`
-		Price    float32 `json:"Price"`
+		Name     string `json:"name"`
+		Category string `json:"category"`
+		Cost     string `json:"cost"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
+	fmt.Println(body.Name)
+	fmt.Println(body.Category)
+	fmt.Println(body.Cost)
+
 	if err != nil {
 		http.Error(w, "failed to decode request", http.StatusBadRequest)
 		return
 	}
-
-	fmt.Print("user %v", body)
 
 	// session, _ := middleware.Store.Get(r, "authentification")
 

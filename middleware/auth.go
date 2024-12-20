@@ -42,7 +42,7 @@ func init() {
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, _ := Store.Get(r, "authentification")
-
+		fmt.Println("Middleware: Request received for", r.URL.Path)
 		fmt.Printf("Session values: %v\n", session.Values) // Debug session values
 
 		if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
