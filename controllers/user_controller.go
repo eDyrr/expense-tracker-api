@@ -3,7 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
+	"strconv"
 
 	"github.com/eDyrr/expense-tracker-api/database"
 	"github.com/eDyrr/expense-tracker-api/middleware"
@@ -132,21 +134,42 @@ func AddPurchase(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// session, _ := middleware.Store.Get(r, "authentification")
+	session, _ := middleware.Store.Get(r, "authentification")
 
-	// purchase := models.Purchase{
-	// 	Name:     body.Name,
-	// 	Category: body.Category,
-	// 	Cost:     body.Price,
-	// 	UserID:   session.Values["user_id"].(uint),
-	// }
+	cost64, _ := strconv.ParseFloat(body.Cost, 32)
 
-	// result := database.DB.Create(&purchase)
-	// if result.Error != nil {
-	// 	http.Error(w, "", http.StatusInternalServerError)
-	// 	return
-	// }
+	purchase := models.Purchase{
+		Name:     body.Name,
+		Category: body.Category,
+		Cost:     float32(cost64),
+		UserID:   session.Values["user_id"].(uint),
+	}
 
-	// w.WriteHeader(http.StatusCreated)
-	// json.NewEncoder(w).Encode(purchase)
+	result := database.DB.Create(&purchase)
+	if result.Error != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	response := `
+	<div class="purchase-item">
+		<p><strong>Name:</strong> {{.Name}}</p>
+		<p><strong>Category:</strong> {{.Category}}</p>
+		<p><strong>Cost:</strong> {{.Cost}}</p>
+	</div>
+	`
+
+	tmpl, err := template.New("purchase").Parse(response)
+	if err != nil {
+		http.Error(w, "Failed to parse template", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "text/html")
+	err = tmpl.Execute(w, purchase)
+	if err != nil {
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
+		return
+	}
 }

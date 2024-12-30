@@ -77,7 +77,7 @@
             </label>
             <button>Filter</button>
         </div>
-        <div class="purchases">
+        <div class="purchases" id="purchases">
             {{ range .Purchases }}
             <div class="purchase-item">
                 <p><strong>Name:</strong> {{ .Name }}</p>
@@ -98,7 +98,7 @@
         <!-- Form for Adding Purchases -->
         <div>
             <h3>Submit Expense</h3>
-            <form hx-ext="json-enc" hx-post="/site/purchase" hx-swap="none">
+            <form hx-ext="json-enc" hx-post="/site/purchase" hx-swap="beforeend" hx-target="#purchases">
                 <input type="text" name="name" placeholder="Name" required>
                 <select name="category" required>
                     <option value="groceries">Groceries</option>
