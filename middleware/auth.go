@@ -15,6 +15,7 @@ var (
 	Store *sessions.CookieStore
 )
 
+// the function below gets called by Golang itself
 func init() {
 	// Load environment variables from .env
 	err := godotenv.Load()

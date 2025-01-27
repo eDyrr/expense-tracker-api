@@ -29,6 +29,7 @@ func main() {
 	fmt.Println("Connection is successful")
 
 	router := mux.NewRouter()
+	// middleware.Init()
 	cors := handlers.CORS(
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"}),
 		handlers.AllowedHeaders([]string{"Content-Type", "Autherization", "Accept", "Origin",

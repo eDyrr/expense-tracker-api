@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/eDyrr/expense-tracker-api/database"
 	"github.com/eDyrr/expense-tracker-api/middleware"
@@ -28,7 +29,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("body %v", body)
+	// fmt.Println("body %v", body)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -61,8 +62,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	session, _ := middleware.Store.Get(r, "authentification")
 	var body struct {
-		Email    string
-		Password string
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&body)
@@ -91,7 +92,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Redirect", "/site/home")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&user)
+	// json.NewEncoder(w).Encode(&user)
 }
 
 func Listall(w http.ResponseWriter, r *http.Request) {
@@ -167,9 +168,62 @@ func AddPurchase(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html")
 	err = tmpl.Execute(w, purchase)
 	if err != nil {
 		http.Error(w, "Failed to render template", http.StatusInternalServerError)
 		return
 	}
+}
+
+func FilterPurchases(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Print("in the filter purchases route")
+
+	var filter = struct {
+		Filter string `json:"filter"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&filter)
+
+	if err != nil {
+		fmt.Print("fucking in the error")
+		http.Error(w, "couldnt filter", http.StatusBadRequest)
+		return
+	}
+
+	var purchases []models.Purchase
+
+	now := time.Now()
+
+	today := now.Format("2006-01-02")
+	fmt.Println("today", today)
+
+	week := now.Add(-7 * 24 * time.Hour)
+	fmt.Println("week ago", week)
+
+	month := now.Add(-30 * 24 * time.Hour)
+	fmt.Println("month ago", month)
+
+	months3 := now.Add(-90 * 24 * time.Hour)
+
+	var date string
+
+	switch filter.Filter {
+	case "last_week":
+		date = week.String()
+	case "last_month":
+		date = month.String()
+	case "last_3_months":
+		date = months3.String()
+	}
+
+	result := database.DB.Where("created_at >= ?", date).Find(&purchases)
+
+	if result.Error != nil {
+		http.Error(w, "cant load all purchases", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(purchases)
 }

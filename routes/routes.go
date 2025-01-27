@@ -30,4 +30,5 @@ func SetUpRoutes(router *mux.Router, tmpl *template.Template) {
 	homeMiddleware.HandleFunc("/home", templates.WithTemplate(tmpl, templates.Home))
 	homeMiddleware.HandleFunc("/list", controllers.Listall)
 	homeMiddleware.HandleFunc("/purchase", controllers.AddPurchase)
+	homeMiddleware.HandleFunc("/filter", controllers.FilterPurchases)
 }

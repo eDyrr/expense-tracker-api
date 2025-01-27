@@ -68,14 +68,16 @@
     <div class="left-half">
         <h3>Purchases</h3>
         <div class="filter-bar">
-            <label>
-                <select>
-                    <option>Past week</option>
-                    <option>Past month</option>
-                    <option>Last 3 months</option>
-                </select>
-            </label>
-            <button>Filter</button>
+            <form hx-ext="json-enc">
+                <label>
+                    <select name="filter">
+                        <option value="past_week">Past week</option>
+                        <option value="past_month">Past month</option>
+                        <option value="last_3_months">Last 3 months</option>
+                    </select>
+                </label>
+                <button type="submit" hx-post="/site/filter">Filter</button>
+            </form>
         </div>
         <div class="purchases" id="purchases">
             {{ range .Purchases }}
