@@ -31,4 +31,6 @@ func SetUpRoutes(router *mux.Router, tmpl *template.Template) {
 	homeMiddleware.HandleFunc("/list", controllers.Listall)
 	homeMiddleware.HandleFunc("/purchase", controllers.AddPurchase)
 	homeMiddleware.HandleFunc("/filter", controllers.FilterPurchases)
+	homeMiddleware.HandleFunc("/clicked", controllers.Select)
+	homeMiddleware.HandleFunc("/delete/{id}", controllers.Delete).Methods("DELETE")
 }

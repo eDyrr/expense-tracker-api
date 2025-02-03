@@ -11,6 +11,7 @@ import (
 	"github.com/eDyrr/expense-tracker-api/database"
 	"github.com/eDyrr/expense-tracker-api/middleware"
 	"github.com/eDyrr/expense-tracker-api/models"
+	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -151,6 +152,7 @@ func AddPurchase(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
+	// <p><strong>ID:</strong> {{ .Id }}</p>
 
 	response := `
 	<div class="purchase-item">
@@ -167,7 +169,6 @@ func AddPurchase(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "text/html")
 	w.Header().Set("Content-Type", "text/html")
 	err = tmpl.Execute(w, purchase)
 	if err != nil {
@@ -226,4 +227,64 @@ func FilterPurchases(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(purchases)
+}
+
+func Select(w http.ResponseWriter, r *http.Request) {
+	response := `
+	<button type="button" 
+			hx-delete="/site/delete/{{ .ID }}"
+			hx-target="closest .purchase-item"
+			hx-swap="outerHTML">
+    		Delete
+	</button>
+`
+
+	tmpl, err := template.New("delete").Parse(response)
+	if err != nil {
+		http.Error(w, "failed to parse template", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/html")
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		http.Error(w, "failed to render template", http.StatusInternalServerError)
+		return
+	}
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr, exists := vars["id"]
+	if !exists {
+		http.Error(w, "ID not provided", http.StatusBadRequest)
+
+		return
+	}
+
+	fmt.Println(idStr)
+
+	purchaseId, err := strconv.ParseUint(idStr, 10, 64)
+
+	fmt.Println(purchaseId)
+
+	if err != nil {
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	session, _ := middleware.Store.Get(r, "authentification")
+
+	userId := session.Values["user_id"].(uint)
+
+	result := DeletePurchase(uint(purchaseId), userId)
+
+	if result != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	// w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(200)
 }

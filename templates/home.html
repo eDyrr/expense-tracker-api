@@ -80,11 +80,19 @@
             </form>
         </div>
         <div class="purchases" id="purchases">
+            
             {{ range .Purchases }}
-            <div class="purchase-item">
+            <div class="purchase-item" id="purchase-{{ .ID}}">
+                <p><strong>ID:</strong> {{ .ID }}</p>
                 <p><strong>Name:</strong> {{ .Name }}</p>
                 <p><strong>Category:</strong> {{ .Category }}</p>
                 <p><strong>Cost:</strong> {{ .Cost }}</p>
+                <button type="button" 
+                        hx-delete="/site/delete/{{ .ID }}"
+                        hx-target="closest div"
+                        hx-swap="outerHTML">
+                        Delete
+	            </button>
             </div>
             {{ else }}
             <p>No purchases yet!</p>
@@ -100,7 +108,7 @@
         <!-- Form for Adding Purchases -->
         <div>
             <h3>Submit Expense</h3>
-            <form hx-ext="json-enc" hx-post="/site/purchase" hx-swap="beforeend" hx-target="#purchases">
+            <form hx-ext="json-enc" hx-post="/site/purchase" hx-swap="beforeend" hx-target="#purchases" hx-on::after-request="this.reset()">
                 <input type="text" name="name" placeholder="Name" required>
                 <select name="category" required>
                     <option value="groceries">Groceries</option>

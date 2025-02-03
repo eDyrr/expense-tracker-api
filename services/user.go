@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/eDyrr/expense-tracker-api/database"
 	"github.com/eDyrr/expense-tracker-api/models"
 )
@@ -11,5 +13,6 @@ func GetPurchases(id interface{}) []models.Purchase {
 	if err != nil {
 		panic("failed to load user purchases")
 	}
+	fmt.Println(purchases)
 	return purchases
 }
