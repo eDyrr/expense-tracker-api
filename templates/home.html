@@ -2,6 +2,7 @@
 <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
 <style>
+    /* Global Styles */
     body {
         padding: 0;
         margin: 0;
@@ -11,6 +12,8 @@
         height: 100vh;
         box-sizing: border-box;
     }
+
+    /* Left and Right Sections */
     .left-half, .right-half {
         display: flex;
         flex: 1;
@@ -19,48 +22,96 @@
         overflow-y: auto;
         box-sizing: border-box;
     }
+
     .left-half {
-        border-right: 1px solid #ccc;
+        border-right: 1px solid #ddd;
     }
+
+    /* Headings */
     h3 {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
     }
+
+    /* Purchases List */
     .purchases {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
     }
+
     .purchase-item {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
     }
-    .right-half button {
-        align-self: flex-end;
-        padding: 10px 15px;
-        margin-bottom: 20px;
-        border: none;
-        border-radius: 5px;
+
+    .purchase-item p {
+        margin: 5px 0;
+    }
+
+    .purchase-item button {
+        margin-right: 10px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
         cursor: pointer;
+        font-size: 14px;
     }
+
+    /* Filter Bar */
+    .filter-bar form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-bar select, .filter-bar button {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    /* Form Styles */
     form {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 20px;
     }
+
     form input, form select, form button {
         padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
     }
+
     form button {
         align-self: flex-start;
         cursor: pointer;
     }
-    .right-half > div {
+
+    /* Logout Button */
+    .right-half > button {
+        align-self: flex-end;
+        padding: 10px 15px;
         margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    /* Profile Card */
+    .profile-card {
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .profile-card p {
+        margin: 5px 0;
     }
 </style>
 <body>
@@ -80,7 +131,6 @@
             </form>
         </div>
         <div class="purchases" id="purchases">
-            
             {{ range .Purchases }}
             <div class="purchase-item" id="purchase-{{ .ID}}">
                 <p><strong>ID:</strong> {{ .ID }}</p>
@@ -91,8 +141,11 @@
                         hx-delete="/site/delete/{{ .ID }}"
                         hx-target="closest div"
                         hx-swap="outerHTML">
-                        Delete
-	            </button>
+                    Delete
+                </button>
+                <button type="button" hx-get="/site/edit/{{ .ID }}" hx-swap="outerHTML" hx-target="#purchase-{{ .ID }}">
+                    Edit
+                </button>
             </div>
             {{ else }}
             <p>No purchases yet!</p>
@@ -122,10 +175,10 @@
                 <input type="number" step="0.01" name="cost" placeholder="Cost" required>
                 <button type="submit">Submit</button>
             </form>
-            
+        </div>
 
         <!-- Profile Card -->
-        <div>
+        <div class="profile-card">
             <h3>User Information</h3>
             <p><strong>Username:</strong> {{ .Name }}</p>
             <p><strong>Email:</strong> {{ .Email }}</p>

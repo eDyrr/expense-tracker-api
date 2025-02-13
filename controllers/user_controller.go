@@ -155,10 +155,23 @@ func AddPurchase(w http.ResponseWriter, r *http.Request) {
 	// <p><strong>ID:</strong> {{ .Id }}</p>
 
 	response := `
-	<div class="purchase-item">
-		<p><strong>Name:</strong> {{.Name}}</p>
-		<p><strong>Category:</strong> {{.Category}}</p>
-		<p><strong>Cost:</strong> {{.Cost}}</p>
+	<div class="purchase-item" id="purchase-{{ .ID }}">
+		<p><strong>ID:</strong> {{ .ID }}</p>
+		<p><strong>Name:</strong> {{ .Name }}</p>
+		<p><strong>Category:</strong> {{ .Category }}</p>
+		<p><strong>Cost:</strong> {{ .Cost }}</p>
+		<button type="button" 
+				hx-delete="/site/delete/{{ .ID }}"
+				hx-target="closest .purchase-item"
+				hx-swap="outerHTML">
+			Delete
+		</button>
+		<button type="button" 
+				hx-get="/site/edit/{{ .ID }}" 
+				hx-target="#purchase-{{ .ID }}" 
+				hx-swap="innerHTML">
+			Edit
+		</button>
 	</div>
 	`
 
@@ -267,8 +280,6 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	purchaseId, err := strconv.ParseUint(idStr, 10, 64)
 
-	fmt.Println(purchaseId)
-
 	if err != nil {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
@@ -287,4 +298,143 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	// w.Header().Set("HX-Refresh", "true")
 	w.WriteHeader(200)
+}
+
+func Edit(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("in the edit")
+
+	// Extracting the ID
+	vars := mux.Vars(r)
+	idStr, exists := vars["id"]
+	if !exists {
+		http.Error(w, "Missing ID in request", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("ID to edit", idStr)
+
+	purchaseID, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	var purchase models.Purchase
+	result := database.DB.Where("ID = ?", purchaseID).First(&purchase)
+	if err := result.Error; err != nil {
+		http.Error(w, "couldnt find row using ID", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(purchase)
+	// Example data (replace with actual DB lookup)
+	data := struct {
+		ID   uint64
+		Name string
+		Cost float32
+	}{
+		ID:   uint64(purchase.ID),
+		Name: purchase.Name,
+		Cost: purchase.Cost,
+	}
+
+	// Corrected HTML form
+	response := `
+	<form id="my-form-{{ .ID }}" class="my-form">
+	<label for="field1">Name</label>
+	<input id="field1" name="field1" value="{{ .Name }}">
+	
+	<label for="field2">Cost</label>
+	<input id="field2" name="field2" value="{{ .Cost }}">
+	
+	<label for="category">Category</label>
+	<select id="category" name="category" required>
+		<option value="groceries">Groceries</option>
+		<option value="leisure">Leisure</option>
+		<option value="electronics">Electronics</option>
+		<option value="utilities">Utilities</option>
+		<option value="clothing">Clothing</option>
+		<option value="health">Health</option>
+		<option value="others">Others</option>
+	</select>
+	
+	<div class="button-container">
+		<button type="submit" hx-confirm="Are you sure you want to confirm editing?" hx-post="/site/edit/{{ .ID }}">
+		Submit
+		</button>
+		<button type="button" hx-get="/site/reset/{{ .ID }}" hx-swap="innerHTML" hx-target="#my-form-{{ .ID }}">
+		Cancel
+		</button>
+	</div>
+	</form>
+
+	<style>
+	.button-container {
+		display: flex;
+		gap: 10px;
+	}
+	</style>
+	`
+
+	// Parse and execute the template safely
+	tmpl, err := template.New("response").Parse(response)
+	if err != nil {
+		http.Error(w, "Error rendering template", http.StatusInternalServerError)
+		return
+	}
+
+	// Set headers before writing response
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+
+	tmpl.Execute(w, data)
+}
+
+func Reset(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("in the reset")
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "error parsing ID", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println("ID :", id)
+
+	var purchase models.Purchase
+	result := database.DB.Where("ID = ?", id).Find(&purchase)
+	if result.Error != nil {
+		http.Error(w, "error finding purchase in the DB", http.StatusInternalServerError)
+		return
+	}
+
+	response := `
+	<div class="purchase-item" id="purchase-{{ .ID}}">
+		<p><strong>ID:</strong> {{ .ID }}</p>
+		<p><strong>Name:</strong> {{ .Name }}</p>
+		<p><strong>Category:</strong> {{ .Category }}</p>
+		<p><strong>Cost:</strong> {{ .Cost }}</p>
+		<button type="button" 
+				hx-delete="/site/delete/{{ .ID }}"
+				hx-target="closest div"
+				hx-swap="outerHTML">
+			Delete
+		</button>
+		<button type="button" hx-get="/site/edit/{{ .ID }}" hx-swap="innerHTML" hx-target="#purchase-{{ .ID }}">
+			Edit
+		</button>
+	</div>
+	`
+
+	tmpl, err := template.New("response").Parse(response)
+	if err != nil {
+		http.Error(w, "failed to render template", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	tmpl.Execute(w, purchase)
 }
