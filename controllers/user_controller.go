@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -340,12 +341,12 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 
 	// Corrected HTML form
 	response := `
-	<form id="my-form-{{ .ID }}" class="my-form">
-	<label for="field1">Name</label>
-	<input id="field1" name="field1" value="{{ .Name }}">
+	<form id="my-form-{{ .ID }}" class="my-form" hx-ext="json-enc">
+	<label for="name">Name</label>
+	<input id="field1" name="name" value="{{ .Name }}">
 	
 	<label for="field2">Cost</label>
-	<input id="field2" name="field2" value="{{ .Cost }}">
+	<input id="field2" name="cost" value="{{ .Cost }}">
 	
 	<label for="category">Category</label>
 	<select id="category" name="category" required>
@@ -359,7 +360,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 	</select>
 	
 	<div class="button-container">
-		<button type="submit" hx-confirm="Are you sure you want to confirm editing?" hx-post="/site/edit/{{ .ID }}">
+		<button type="submit" hx-confirm="Are you sure you want to confirm editing?" hx-post="/site/submit/{{ .ID }}" hx-swap="innerHTML" hx-target="#my-form-{{ .ID }}">
 		Submit
 		</button>
 		<button type="button" hx-get="/site/reset/{{ .ID }}" hx-swap="innerHTML" hx-target="#my-form-{{ .ID }}">
@@ -437,4 +438,77 @@ func Reset(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
 	tmpl.Execute(w, purchase)
+}
+
+func Submit(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("in the submit")
+	var body struct {
+		Name     string `json:"name"`
+		Cost     string `json:"cost"`
+		Category string `json:"category"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		log.Printf("Error decoding JSON: %v", err)
+		http.Error(w, "couldnt decode", http.StatusInternalServerError)
+		return
+	}
+	cost64, _ := strconv.ParseFloat(body.Cost, 32)
+
+	idStr := mux.Vars(r)["id"]
+	id64, _ := strconv.ParseUint(idStr, 10, 64)
+
+	var purchase models.Purchase
+	result := database.DB.First(&purchase, id64)
+	if result.Error != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	// session, _ := middleware.Store.Get(r, "authentification")
+
+	purchase.Name = body.Name
+	purchase.Cost = float32(cost64)
+	purchase.Category = body.Category
+	// purchase.UserID = userID
+
+	database.DB.Save(&purchase)
+
+	response := `
+	<div class="purchase-item" id="purchase-{{ .ID }}">
+		<p><strong>ID:</strong> {{ .ID }}</p>
+		<p><strong>Name:</strong> {{ .Name }}</p>
+		<p><strong>Category:</strong> {{ .Category }}</p>
+		<p><strong>Cost:</strong> {{ .Cost }}</p>
+		<button type="button" 
+				hx-delete="/site/delete/{{ .ID }}"
+				hx-target="closest .purchase-item"
+				hx-swap="outerHTML">
+			Delete
+		</button>
+		<button type="button" 
+				hx-get="/site/edit/{{ .ID }}" 
+				hx-target="#purchase-{{ .ID }}" 
+				hx-swap="innerHTML">
+			Edit
+		</button>
+	</div>
+	`
+
+	tmpl, err := template.New("response").Parse(response)
+	if err != nil {
+		http.Error(w, "Failed to parse template", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(body)
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Contet-Type", "text/html")
+	err = tmpl.Execute(w, purchase)
+	if err != nil {
+		http.Error(w, "Failed to render template", http.StatusInternalServerError)
+		return
+	}
+
 }

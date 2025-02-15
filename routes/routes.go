@@ -35,4 +35,5 @@ func SetUpRoutes(router *mux.Router, tmpl *template.Template) {
 	homeMiddleware.HandleFunc("/delete/{id}", controllers.Delete).Methods("DELETE")
 	homeMiddleware.HandleFunc("/edit/{id}", controllers.Edit)
 	homeMiddleware.HandleFunc("/reset/{id}", controllers.Reset)
+	homeMiddleware.HandleFunc("/submit/{id}", controllers.Submit)
 }
