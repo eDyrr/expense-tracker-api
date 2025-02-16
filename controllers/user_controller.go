@@ -31,7 +31,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// fmt.Println("body %v", body)
+	fmt.Print("body %v", body)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -52,10 +52,11 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("HX-Redirect", "/site/home")
 	w.WriteHeader(http.StatusCreated)
 	user.Password = ""
-	json.NewEncoder(w).Encode(&user)
+	// json.NewEncoder(w).Encode(&user)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -73,6 +74,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "couldnt decode req body", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println(body)
 
 	var user models.User
 

@@ -1,4 +1,6 @@
 {{ define "signup" }}
+<script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.js" integrity="sha384-oeUn82QNXPuVkGCkcrInrS1twIxKhkZiFfr2TdiuObZ3n3yIeMiqcRzkIcguaof1" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
 <style>
 * {
   box-sizing: border-box;
@@ -119,7 +121,7 @@ input:focus {
 <div class="right-section">
   <h1>Sign Up</h1>
   <p>Fill in your details below to create your account.</p>
-  <form>
+  <form hx-ext="json-enc">
     <div class="form-group">
       <label for="name">Name</label>
       <input type="text" id="name" name="name" placeholder="Enter your name" required>
