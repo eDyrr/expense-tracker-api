@@ -113,10 +113,13 @@ func Listall(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("in the logout")
 	session, _ := middleware.Store.Get(r, "authentification")
 
 	session.Values["authenticated"] = false
 	session.Save(r, w)
+	w.Header().Set("HX-Redirect", "/")
+	w.WriteHeader(http.StatusOK)
 }
 
 func AddPurchase(w http.ResponseWriter, r *http.Request) {

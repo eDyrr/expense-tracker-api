@@ -36,4 +36,5 @@ func SetUpRoutes(router *mux.Router, tmpl *template.Template) {
 	homeMiddleware.HandleFunc("/edit/{id}", controllers.Edit)
 	homeMiddleware.HandleFunc("/reset/{id}", controllers.Reset)
 	homeMiddleware.HandleFunc("/submit/{id}", controllers.Submit)
+	homeMiddleware.HandleFunc("/logout", controllers.Logout)
 }
